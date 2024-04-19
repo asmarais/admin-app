@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Sidebar from "./components/Sidebar";
+import Navbar from "./components/Navbar";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import NotFoundPage from "./pages/NotFoundPage";
+import Participants from "./pages/Participants";
+import Events from "./pages/Events";
+import Runs from "./pages/Runs";
+import Team from "./pages/Team";
 
 function App() {
+  const [sidebarHidden, setSidebarHidden] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebarHidden(!sidebarHidden);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Sidebar hidden={sidebarHidden} />
+        <div className="content">
+          <Navbar onMenuClick={toggleSidebar} />
+          <Routes>
+            <Route default path="/" element={<Dashboard />} />
+            <Route path="/participants" element={<Participants />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/participantruns" element={<Runs />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
-
 export default App;

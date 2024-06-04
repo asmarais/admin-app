@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "boxicons/css/boxicons.min.css";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { cleanToken } from "../api/auth";
 
 export default function Sidebar({ hidden }) {
   const [activeMenuItem, setActiveMenuItem] = useState("");
+  const navigate = useNavigate();
+  const auth = JSON.parse(localStorage.getItem("Auth"));
 
   const handleMenuItemClick = (menuItem) => {
     setActiveMenuItem(menuItem);
   };
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+    if (!confirmLogout) {
+      return;
+    }
+    cleanToken();
+    navigate("/login");
+  };
+
   return (
     <section className={`sidebar ${hidden ? "hide" : ""}`}>
       <a href="#" className="brand">
@@ -50,17 +62,19 @@ export default function Sidebar({ hidden }) {
             <span className="text">Runs</span>
           </Link>
         </li>
-
-        <li className={activeMenuItem === "team" ? "active" : ""}>
-          <Link onClick={() => handleMenuItemClick("team")} to="/team">
-            <i className="bx bxs-group"></i>
-            <span className="text">Team</span>
-          </Link>
-        </li>
+        {auth && auth.role === "Admin" && (
+          <li className={activeMenuItem === "team" ? "active" : ""}>
+            <Link onClick={() => handleMenuItemClick("team")} to="/team">
+              <i className="bx bxs-group"></i>
+              <span className="text">Team</span>
+            </Link>
+          </li>
+        )}
       </ul>
+
       <ul className="side-menu">
         <li>
-          <a href="#" className="logout">
+          <a className="logout" onClick={handleLogout}>
             <i className="bx bxs-log-out-circle"></i>
             <span className="text">Logout</span>
           </a>

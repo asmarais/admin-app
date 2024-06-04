@@ -4,13 +4,15 @@ import api from "../api/api";
 
 const customStyles = {
   content: {
-    top: "55%",
+    top: "50%",
     left: "50%",
     right: "auto",
     bottom: "auto",
     marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
+    transform: "translate(-40%, -50%)",
     overflowY: "auto",
+    maxWidth: "80%",
+    maxHeight: "80%",
   },
 };
 
@@ -37,8 +39,20 @@ export default function EditParticipant({ isOpen, closeModal, participantId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(editedParticipant);
+    const obj = {
+      email: editedParticipant.email,
+      firstName: editedParticipant.firstName,
+      secondName: editedParticipant.lastName,
+      phone: editedParticipant.phone,
+      age: editedParticipant.age,
+      height: editedParticipant.height,
+      weight: editedParticipant.weight,
+      tshirtSize: editedParticipant.tshirtSize,
+      gender: editedParticipant.gender,
+    };
     try {
-      await api.put(`Participants/${participantId}`, editedParticipant);
+      await api.put(`Participants/${participantId}`, obj);
       window.location.reload();
       closeModal();
     } catch (error) {
@@ -69,105 +83,46 @@ export default function EditParticipant({ isOpen, closeModal, participantId }) {
               />
             </div>
             <div>
-              <label htmlFor="secondName">
-                Second Name<span className="required">*</span>
+              <label htmlFor="lastName">
+                Last Name<span className="required">*</span>
               </label>
               <input
                 type="text"
-                name="secondName"
-                value={editedParticipant.secondName}
+                name="lastName"
+                value={editedParticipant.lastName}
                 onChange={handleChange}
               />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="country">Country</label>
-              <input
-                type="text"
-                id="country"
-                name="country"
-                value={editedParticipant.country}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="zipCode">Zip Code</label>
-              <input
-                type="number"
-                id="zipCode"
-                name="zipCode"
-                value={editedParticipant.zipCode}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="city">City</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                value={editedParticipant.city}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="street">Street</label>
-              <input
-                type="text"
-                id="street"
-                name="street"
-                value={editedParticipant.street}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="birthday">
-                Birthday<span className="required">*</span>
-              </label>
-              <input
-                type="date"
-                id="birthday"
-                name="birthday"
-                value={editedParticipant.birthday}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="gender">
-                Gender <span className="required">*</span>
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={editedParticipant.gender}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
             </div>
           </div>
 
           <div className="form-row">
             <div>
               <label htmlFor="email">
-                Email <span className="required">*</span>
+                Email<span className="required">*</span>
               </label>
               <input
-                type="email"
-                id="email"
                 name="email"
+                type="email"
                 value={editedParticipant.email}
                 onChange={handleChange}
-                required
               />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div>
+              <label htmlFor="gender">
+                Gender <span className="required">*</span>
+              </label>
+              <select
+                name="gender"
+                value={editedParticipant.gender}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
             </div>
             <div>
               <label htmlFor="phone">
@@ -175,30 +130,67 @@ export default function EditParticipant({ isOpen, closeModal, participantId }) {
               </label>
               <input
                 type="tel"
-                id="phone"
-                name="phone"
                 value={editedParticipant.phone}
                 onChange={handleChange}
-                required
               />
             </div>
           </div>
-
           <div className="form-row">
             <div>
-              <label htmlFor="passwordHash">
-                Password <span className="required">*</span>
+              <label htmlFor="age">
+                Age <span className="required">*</span>
               </label>
               <input
-                type="password"
-                id="password"
-                name="passwordHash"
-                //value={editedParticipant.passwordHash}
+                type="number"
+                name="age"
+                value={editedParticipant.age}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="height">
+                Height (kg) <span className="required">*</span>
+              </label>
+              <input
+                type="number"
+                name="height"
+                value={editedParticipant.height}
                 onChange={handleChange}
               />
             </div>
           </div>
-          <button className="add">Edit</button>
+          <div className="form-row">
+            <div>
+              <label htmlFor="weight">
+                Weight (kg) <span className="required">*</span>
+              </label>
+              <input
+                type="number"
+                name="weight"
+                value={editedParticipant.weight}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="tshirtSize">
+                T-shirt Size <span className="required">*</span>
+              </label>
+              <select
+                name="tshirtSize"
+                value={editedParticipant.tshirtSize}
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="XS">Extra Small</option>
+                <option value="S">Small</option>
+                <option value="M">Medium</option>
+                <option value="L">Large</option>
+                <option value="XL">Extra Large</option>
+                <option value="XXL">Double Extra Large</option>
+              </select>
+            </div>
+          </div>
+          <button className="add">Save</button>
         </form>
       </div>
     </Modal>

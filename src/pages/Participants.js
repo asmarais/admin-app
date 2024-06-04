@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import AddParticipant from "../components/AddParticipant";
-import ViewParticipant from "../components/ViewParticipant";
-import api from "../api/api";
+import AddParticipant from "./AddParticipant";
+import ViewParticipant from "./ViewParticipant";
 import Pagination from "../components/Pagination";
-import EditParticipant from "../components/EditParticipant";
+import EditParticipant from "./EditParticipant";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Participants() {
   const [addParticipantIsOpen, setAddParticipantIsOpen] = useState(false);
@@ -15,6 +17,9 @@ export default function Participants() {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(10);
   const [search, setSearch] = useState("");
+  const apiPrivate = useAxiosPrivate();
+
+  const auth = JSON.parse(localStorage.getItem("Auth"));
 
   //Create Modal
   function openAddParticipant() {
@@ -34,19 +39,17 @@ export default function Participants() {
   function closeViewParticipant() {
     setViewParticipantIsOpen(false);
   }
-
   //Update Modal
   function openUpdateParticipant(Id) {
     setUpdateParticipantIsOpen(true);
     setParticipantId(Id);
   }
-
   function closeUpdateParticipant() {
     setUpdateParticipantIsOpen(false);
   }
 
   useEffect(() => {
-    api
+    apiPrivate
       .get("Participants")
       .then((response) => {
         setParticipants(response.data);
@@ -63,10 +66,11 @@ export default function Participants() {
     if (!confirmDelete) {
       return;
     }
-
     try {
-      api.delete(`Participants/${id}`);
-      window.location.reload();
+      apiPrivate.delete(`Participants/${id}`);
+      toast.success("Participant deleted successfully!", {
+        onClose: () => window.location.reload(),
+      });
     } catch (error) {
       console.error("Error deleting participant:", error);
     }
@@ -79,17 +83,19 @@ export default function Participants() {
 
   // Filtered data based on search input
   const filteredParticipants = participants.filter((participant) =>
-    participant.firstName.toLowerCase().includes(search.toLowerCase())
+    participant.email.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <main className="participant">
       <div className="head">
         <h1>Participants</h1>
-        <button className="add" onClick={openAddParticipant}>
-          <i className="bx bx-plus-circle"></i>
-          New Participant
-        </button>
+        {auth && auth.role === "Admin" && (
+          <button className="add" onClick={openAddParticipant}>
+            <i className="bx bx-plus-circle"></i>
+            New
+          </button>
+        )}
         <AddParticipant
           isOpen={addParticipantIsOpen}
           closeModal={closeAddParticipant}
@@ -105,72 +111,75 @@ export default function Participants() {
         <i className="bx bx-search search-icon"></i>
       </div>
       <div className="data">
-        <table>
-          <thead>
-            <tr>
-              <th>First Name</th>
-              <th>Second Name</th>
-              <th>Birthday</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Gender</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredParticipants
-              .slice(firstPostIndex, lastPostIndex)
-              .map((participant) => (
-                <tr key={participant.id}>
-                  <td>{participant.firstName}</td>
-                  <td>{participant.secondName}</td>
-                  <td>{participant.birthday}</td>
-                  <td>{participant.email}</td>
-                  <td>{participant.phone}</td>
-                  <td>{participant.gender}</td>
-                  <td>
-                    <div className="row">
-                      <button
-                        className="info-button btn"
-                        onClick={() => openViewParticipant(participant.id)}
-                      >
-                        <i className="bx bx-info-circle"></i>
-                      </button>
-                      {viewParticipantIsOpen &&
-                        participant.id === participantId && (
-                          <ViewParticipant
-                            isOpen={viewParticipantIsOpen}
-                            closeModal={closeViewParticipant}
-                            participantId={participantId}
-                          />
-                        )}
+        <div className="order">
+          <table>
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredParticipants
+                .slice(firstPostIndex, lastPostIndex)
+                .map((participant) => (
+                  <tr key={participant.id}>
+                    <td>{participant.firstName}</td>
+                    <td>{participant.lastName}</td>
+                    <td>{participant.email}</td>
 
-                      <button
-                        className="edit-button btn"
-                        onClick={() => openUpdateParticipant(participant.id)}
-                      >
-                        <i class="bx bxs-edit-alt"></i>
-                      </button>
-                      {updateParticipantIsOpen &&
-                        participant.id === participantId && (
-                          <EditParticipant
-                            isOpen={updateParticipantIsOpen}
-                            closeModal={closeUpdateParticipant}
-                            participantId={participantId}
-                          />
+                    <td>
+                      <div className="row">
+                        <button
+                          className="info-button btn"
+                          onClick={() => openViewParticipant(participant.id)}
+                        >
+                          <i className="bx bx-info-circle"></i>
+                        </button>
+                        {viewParticipantIsOpen &&
+                          participant.id === participantId && (
+                            <ViewParticipant
+                              isOpen={viewParticipantIsOpen}
+                              closeModal={closeViewParticipant}
+                              participantId={participantId}
+                            />
+                          )}
+                        {auth && auth.role === "Admin" && (
+                          <>
+                            <button
+                              className="edit-button btn"
+                              onClick={() =>
+                                openUpdateParticipant(participant.id)
+                              }
+                            >
+                              <i className="bx bxs-edit-alt"></i>
+                            </button>
+                            {updateParticipantIsOpen &&
+                              participant.id === participantId && (
+                                <EditParticipant
+                                  isOpen={updateParticipantIsOpen}
+                                  closeModal={closeUpdateParticipant}
+                                  participantId={participantId}
+                                />
+                              )}
+                            <button
+                              className="delete-button btn"
+                              onClick={() => handleDelete(participant.id)}
+                            >
+                              <i className="bx bxs-trash"></i>
+                            </button>
+                          </>
                         )}
-                      <button
-                        className="delete-button btn"
-                        onClick={() => handleDelete(participant.id)}
-                      >
-                        <i class="bx bxs-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
         <Pagination
           totalPosts={filteredParticipants.length}
           postsPerPage={postsPerPage}

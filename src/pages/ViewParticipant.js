@@ -9,8 +9,10 @@ const customStyles = {
     right: "auto",
     bottom: "auto",
     marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
+    transform: "translate(-40%, -50%)",
     overflowY: "auto",
+    maxWidth: "80%",
+    maxHeight: "80%",
   },
 };
 
@@ -20,6 +22,7 @@ export default function ViewParticipant({ isOpen, closeModal, participantId }) {
     api
       .get(`Participants/${participantId}`)
       .then((response) => {
+        console.log(response.data);
         setParticipant(response.data);
       })
       .catch((error) => {
@@ -43,38 +46,8 @@ export default function ViewParticipant({ isOpen, closeModal, participantId }) {
               <input type="text" value={participant.firstName} disabled />
             </div>
             <div>
-              <label htmlFor="secondName">Second name</label>
-              <input type="text" value={participant.secondName} disabled />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="country">Country</label>
-              <input type="text" value={participant.country} disabled />
-            </div>
-            <div>
-              <label htmlFor="zipCode">Zip Code</label>
-              <input type="number" value={participant.zipCode} disabled />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="city">City</label>
-              <input type="text" value={participant.city} disabled />
-            </div>
-            <div>
-              <label htmlFor="street">Street</label>
-              <input type="text" value={participant.street} disabled />
-            </div>
-          </div>
-          <div className="form-row">
-            <div>
-              <label htmlFor="birthday">Birthday</label>
-              <input type="date" value={participant.birthday} disabled />
-            </div>
-            <div>
-              <label htmlFor="gender">Gender</label>
-              <input value={participant.gender} disabled />
+              <label htmlFor="secondName">Last name</label>
+              <input type="text" value={participant.lastName} disabled />
             </div>
           </div>
           <div className="form-row">
@@ -82,9 +55,36 @@ export default function ViewParticipant({ isOpen, closeModal, participantId }) {
               <label htmlFor="email">Email</label>
               <input type="email" value={participant.email} disabled />
             </div>
+          </div>
+
+          <div className="form-row">
+            <div>
+              <label htmlFor="gender">Gender</label>
+              <input value={participant.gender} disabled />
+            </div>
             <div>
               <label htmlFor="phone">Phone</label>
               <input type="tel" value={participant.phone} disabled />
+            </div>
+          </div>
+          <div className="form-row">
+            <div>
+              <label htmlFor="age">Age</label>
+              <input value={participant.age} disabled />
+            </div>
+            <div>
+              <label htmlFor="height">Height</label>
+              <input value={participant.height} disabled />
+            </div>
+          </div>
+          <div className="form-row">
+            <div>
+              <label htmlFor="weight">Weight</label>
+              <input value={participant.weight} disabled />
+            </div>
+            <div>
+              <label htmlFor="tshirtSise">T-shirt size</label>
+              <input value={participant.tshirtSize} disabled />
             </div>
           </div>
         </form>

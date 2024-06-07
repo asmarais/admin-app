@@ -3,6 +3,8 @@ import Modal from "react-modal";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { format } from "date-fns";
 import eventSchema from "../utils/EventShema";
 
@@ -59,6 +61,7 @@ export default function AddEvent({ isOpen, closeModal }) {
   const onSubmit = async (data) => {
     const event = {
       ...data,
+      status: "open",
       start: format(new Date(data.start), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
       end: format(new Date(data.end), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
       imageName: "image",
@@ -73,8 +76,8 @@ export default function AddEvent({ isOpen, closeModal }) {
           "Content-Type": "multipart/form-data",
         },
       });
-      const eventId = eventResponse.data.id;
-      console.log(eventResponse.data.id);
+      const eventId = eventResponse.data;
+      console.log("id", eventResponse.data);
       console.log(checkedBoxes);
       // Add event attributes
       const checkedEventTypes = eventTypes.filter(
@@ -94,6 +97,9 @@ export default function AddEvent({ isOpen, closeModal }) {
           console.log(eventAttributeResponse);
           const eventAttributeId = eventAttributeResponse.data.id;
           console.log("Event attribute is created with id", eventAttributeId);
+          toast.success("Event added successfully!", {
+            onClose: () => window.location.reload(),
+          });
         } catch (error) {
           console.error("Error creating event attribute:", error);
         }
@@ -129,6 +135,7 @@ export default function AddEvent({ isOpen, closeModal }) {
                 <span className="error">{errors.eventName.message}</span>
               )}
             </div>
+
             <div>
               <label htmlFor="status">
                 Status <span className="required">*</span>

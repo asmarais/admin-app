@@ -3,6 +3,8 @@ import Modal from "react-modal";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import participantSchema from "../utils/participantSchema";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import api from "../api/api";
 
 const customStyles = {
@@ -35,7 +37,10 @@ export default function AddParticipant({ isOpen, closeModal }) {
     try {
       const response = await api.post("Participants", participant);
       console.log("Response from backend:", response.data);
-      window.location.reload();
+      toast.success("Participant added successfully!", {
+        onClose: () => window.location.reload(),
+      });
+
       closeModal();
     } catch (error) {
       console.error("Error submitting form:", error);
